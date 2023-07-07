@@ -31,8 +31,8 @@
 
 const char* ssid     = "Xiaomi 11T Pro";
 const char* password = "felixleplussexy";
-//const char* ssid = "Walala";
-//const char* password = "@@@@@@@@";
+//const char* ssid = "Bbox-49156F55";
+//const char* password = "911C12521962D936EA2429499F1593";
 
 DNSServer dnsServer;
 AsyncWebServer server(80);
@@ -59,40 +59,6 @@ byte decimalToBcd(int decimal);
 void configurerHorlogeDS1307(int annee, int mois, int jour, int heures, int minutes, int secondes);
 void afficherHeureDS1307();
 String returnHeureDS1307();
-
-const char index_html[] PROGMEM = R"rawliteral(
-<!DOCTYPE HTML><html>
-<head>
-  <title>ESP Web Server</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="data:,">
-  <style>
-    html {font-family: Arial; display: inline-block; text-align: center;}
-    h2 {font-size: 3.0rem;}
-    p {font-size: 3.0rem;}
-    body {max-width: 600px; margin:0px auto; padding-bottom: 25px;}
-    .switch {position: relative; display: inline-block; width: 120px; height: 68px} 
-    .switch input {display: none}
-    .slider {position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; border-radius: 6px}
-    .slider:before {position: absolute; content: ""; height: 52px; width: 52px; left: 8px; bottom: 8px; background-color: #fff; -webkit-transition: .4s; transition: .4s; border-radius: 3px}
-    input:checked+.slider {background-color: #b30000}
-    input:checked+.slider:before {-webkit-transform: translateX(52px); -ms-transform: translateX(52px); transform: translateX(52px)}
-  </style>
-</head>
-<body>
-  <h2>Station meteo</h2>
-  %Date_heure%
-  %BUTTONPLACEHOLDER%
-<script>function toggleCheckbox(element) {
-  var xhr = new XMLHttpRequest();
-  if(element.checked){ xhr.open("GET", "/update?output="+element.id+"&state=1", true); }
-  else { xhr.open("GET", "/update?output="+element.id+"&state=0", true); }
-  xhr.send();
-}
-</script>
-</body>
-</html>
-)rawliteral";
 
 void setup(){
   // Serial port for debugging purposes
@@ -143,8 +109,11 @@ void setup(){
 void loop(){
   static unsigned long timer1 = millis();
   //Elements sycrones
-  if(millis() - timer1 > 1000){
+  if(millis() - timer1 > 2000){
     afficherHeureDS1307();
+    LoRa.beginPacket();  // Début de l'émission du paquet
+    LoRa.print("OK"); // Envoi du message via LoRa
+    LoRa.endPacket();    // Fin de l'émission du paquet
     timer1 = millis();
   }
   
@@ -158,8 +127,5 @@ void loop(){
 
     Serial.println("Message reçu : " + message);
 
-    LoRa.beginPacket();  // Début de l'émission du paquet
-    LoRa.print("OK"); // Envoi du message via LoRa
-    LoRa.endPacket();    // Fin de l'émission du paquet
   }
 }
