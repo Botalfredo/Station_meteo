@@ -3,6 +3,7 @@
 #include <LoRa.h>
 #include <SPI.h>
 #include <math.h>
+#include <LiquidCrystal.h>
 
 //==================== Constantes ====================//
 
@@ -11,6 +12,11 @@
 #define BMP180_REG_RESULT 0xF6
 #define BMP180_COMMAND_TEMPERATURE 0x2E
 #define BMP180_COMMAND_PRESSURE 0x34 //0x34 0x74 0xB4 0xF4
+
+#define R1 10000
+#define R2 20000
+#define PIN_BAT A0
+#define LED 8
 
 // Utilisation de const pour garder la data en memoire vive
 
@@ -42,6 +48,21 @@ const int d7 = 7;     // Broche D7 de l'écran LCD
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 //====================== Fonctions ===================//
+
+// Fonction pour mesurer la tension de la batterie avec un Arduino 328P
+float mesurerTensionBatterie() {
+  // Lecture de la valeur analogique sur la broche A0
+  int valeurLue = analogRead(A0);
+
+  // Conversion de la valeur lue en tension
+  float tension = valeurLue * (5.0 / 1023.0); // 5.0V est la tension de référence de l'Arduino
+
+  // Calcul de la tension réelle de la batterie en utilisant un diviseur de tension
+  // Si vous utilisez un diviseur de tension, remplacez les valeurs de résistance R1 et R2 ci-dessous
+  float tensionBatterie = tension * ((R1 + R2) / R2);
+
+  return tensionBatterie;
+}
 
 char begin(){
   double c3,c4,b1;
@@ -178,7 +199,7 @@ double calculateTemperature(double ut){
 
   a = c5 * (ut - c6);
   T = a + (mc / (a + md));
-  
+
   return T;
 }
 
@@ -232,7 +253,7 @@ void setup()
   
   while (!Serial);
   LoRa.setPins(SS_PIN, RST_PIN, MISO_PIN); // Définir les broches SS, RST et MISO
-  if (!LoRa.begin(866E6)) {
+  if (!LoRa.begin(848E6)) {
     Serial.println("Erreur lors de l'initialisation du module LoRa.");
     while (1);
   }
@@ -289,11 +310,15 @@ void loop()
 
     temperature_SHT21 = ((msb << 8) | lsb) * 175.72 / 65536.0 - 46.85;
   }
+//=======================Tension Bat============================//
+
+  float tensionBatterie = mesurerTensionBatterie();
 
 //=======================Affichage==============================//
   
   // Attendre la réception d'un paquet LoRa
   int packetSize = LoRa.parsePacket();
+  
   if (packetSize) {
     // Lire le message reçu
     String isOK = "";
@@ -306,7 +331,7 @@ void loop()
   if (2000 < (millis()- timer1)) {
 
     if (measureParameters(P,T) != 0){
-      Serial.print("temperature: ");
+      /*Serial.print("temperature: ");
       Serial.print(T,2);
       Serial.print(" deg C, ");
       Serial.print((9.0/5.0)*T+32.0,2);
@@ -314,37 +339,42 @@ void loop()
     
       Serial.print("absolute pressure: ");
       Serial.print(P,2);
-      Serial.print(" mb, ");
+      Serial.print(" mb, ");*/
       
       a = 44330.0*(1-pow(P/1013.25,1/5.255));
-      Serial.print("computed altitude: ");
+      /*Serial.print("computed altitude: ");
       Serial.print(a,0);
       Serial.print(" meters, ");
       Serial.print(a*3.28084,0);
-      Serial.println(" feet");
+      Serial.println(" feet");*/
     }
     else {
       Serial.println("error retrieving pressure measurement\n");
     }
     
     // Affiche les valeurs d'humidité et de température
+    /*
     Serial.print("Humidite: ");
     Serial.print(humidity);
     Serial.print(" %\n");
     Serial.print("Temperature SHT21: ");
     Serial.print(temperature_SHT21);
     Serial.println(" °C\n\n");
-    
-    if ((counter % 3) == 0) {
+
+    Serial.print("Tension de la batterie : ");
+    Serial.print(tensionBatterie);
+    Serial.println("V");
+    */
+    if ((counter % 4) == 0) {
       lcd.clear(); // Efface l'écran LCD
       lcd.setCursor(0, 0); // Place le curseur à la position (0, 0) (première colonne, première ligne)
       lcd.print(" Press :"); // Affiche "Hello, World!" sur l'écran LCD
       lcd.setCursor(0, 1);
       lcd.print(P);
-      lcd.print(" bar");
+      lcd.print(" mb");
       message = "P" + (String)P;
     }
-    if ((counter % 3) == 1) {
+    if ((counter % 4) == 1) {
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print(" Temp : ");
@@ -355,7 +385,7 @@ void loop()
       message = "D" + (String)T;
     }
   
-    if ((counter % 3) == 2) {
+    if ((counter % 4) == 2) {
       lcd.clear();
       lcd.setCursor(0, 0);
       lcd.print(" Hum : ");
@@ -364,12 +394,29 @@ void loop()
       lcd.print(" %");
       message = "H" + (String)humidity;
     }
+
+    if ((counter % 4) == 3) {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print(" Bat : ");
+      lcd.setCursor(0, 1);
+      lcd.print(tensionBatterie);
+      lcd.print(" V");
+      message = "B" + (String)tensionBatterie;
+    }
     
     LoRa.beginPacket();  // Début de l'émission du paquet
     LoRa.print((String)message); // Envoi du message via LoRa
     LoRa.endPacket();    // Fin de l'émission du paquet
-    Serial.println("Message envoyé : " + message); 
+    Serial.println("Message envoyé : " + message);
+    digitalWrite(8, HIGH);
+
+    if(isOK == "OK") {
+    } else {
+      digitalWrite(8, LOW);
+    }
     timer1 = millis();
     counter++;
+    message = "";
   }
 }
