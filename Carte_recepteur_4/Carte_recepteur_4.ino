@@ -27,10 +27,9 @@
 //RTC
 #define DS1307_ADDRESS 0x68
 
-// SI7021
-#define SI7021_ADDRESS 0x70
-#define SI7021_MEASURE_HUMIDITY_HOLD 0xE5
-#define SI7021_MEASURE_TEMPERATURE_HOLD 0xE3
+// SI7034
+#define SI7034_ADDRESS 0x70
+#define hexCode 0x7866
 
 //Matrice de pixel pour le symbole degré
 byte Chardeg[] = {
@@ -78,8 +77,9 @@ void configurerHorlogeDS1307(int annee, int mois, int jour, int heures, int minu
 void afficherHeureDS1307();
 String returnHeureDS1307();
 //Fonction capteur
-float readTemperature();
-float readHumidity();
+void normalMeasurement();
+float readTemperature(uint16_t rawValue);
+float readHumidity(uint16_t rawValue);
 //Fonction main
 void PrintLCDdata();
 void ParceData(String message);
@@ -167,8 +167,7 @@ void loop() {
   }
   //Toute les 5 secondes
   if (millis() - timer2 > 5000) {
-    humidity = readHumidity();
-    temperature = readTemperature();
+    normalMeasurement();
     timer2 = millis();
   }
 
