@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+</style>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	  <meta name="viewport" content="width=device-width, initial-scale=1">
+	  <title>🌦️Station météo</title>
+	  <!-- request CSS from the ESP8266 web server -->
+	  <link rel="stylesheet" href="css/bootstrap.min.css">
+	  <link rel="stylesheet" href="css/styles.css">
+	  <!--<link rel="icon" href="images/kanope.png">-->
+
+</head>
+
+<body>
+
+	<nav class="navbar navbar-default navbar-static-top bg-light" id="top" role="banner">
+		<div class="container">
+		  <div class="navbar-header">
+			<a class="navbar-brand" href="https://www.ensta-bretagne.fr/fr" target="_blank"><img src="image/logo.png"
+				style="width: 22px; height: 22px;" /></a>
+			<a class="navbar-brand" target="_blank" style="font-size: 16px;">ENSTA Bretagne</a>
+		  </div>
+		</div>
+	</nav>
+	
+	<p><strong>Station météo</strong></p>
+	<p></p>
+	<p>%Date_heure%</p>
+	<p></p>
+	<table>
+	<tbody>
+		<thead>
+			<tr>
+				<th colspan="3">Données capteurs</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr><td>Température intérieure</td><td>%temperature_int%°C</td></tr>
+			<tr><td>Humidité intérieure</td><td>%humidite_int%/100</td></tr>
+			<tr><td>Température extérieure</td><td>%temperature_ext%°C</td></tr>
+			<tr><td>Humidité extérieure</td><td>%humidite_ext%/100</td></tr>
+			<tr><td>Pression extérieure</td><td>%pression_ext% mPa</td></tr>
+			<tr><td>Tension batterie</td><td>%tension_bat% V</td></tr>
+		</tbody>
+		</table>		
+	</tbody>
+	</table>
+	<p>Projet de SA2 réalisé par Alfred DEDUYER et Félix HENAFF</p>
+  <nav class="navbar navbar-default navbar-fixed-bottom ">
+  </nav>
+
+</body>
+
+</html>
