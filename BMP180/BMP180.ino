@@ -290,7 +290,7 @@ void setup()
   
   while (!Serial);                            // Tant que la liaison série n'a pas démarré on attends avant de passer à la suite
   LoRa.setPins(SS_PIN, RST_PIN, MISO_PIN);    // Définir les broches SS, RST et MISO pour le LORA
-  if (!LoRa.begin(848E6)) {                   // Initialisation du LoRa à 848MHz (pas 866 car la fréquenece était polluée par d'autres). Si le LoRa ne s'inistialise pas ou pas bien on affiche sur le port série l'echec
+  if (!LoRa.begin(866E6)) {                   // Initialisation du LoRa à 848MHz (pas 866 car la fréquenece était polluée par d'autres). Si le LoRa ne s'inistialise pas ou pas bien on affiche sur le port série l'echec
     Serial.println("Erreur lors de l'initialisation du module LoRa.");
     while (1);                                // On reste dans la condition pour ne pas casser le reste ou cas ou
   }
