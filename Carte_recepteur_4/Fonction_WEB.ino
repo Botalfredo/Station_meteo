@@ -4,11 +4,11 @@ String processor(const String& var){
   //Serial.println(var);
   if(var == "temperature_int"){
     //varable température intérieure
-    return String(readTemperature());
+    return String(temperature);
   }
   else if(var == "humidite_int"){
     //varable humidité intérieur
-    return String(readHumidity());
+    return String(humidity);
   }
   else if(var == "temperature_ext"){
     //varable Température extérieure
