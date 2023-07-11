@@ -145,7 +145,7 @@ void setup() {
   SPI.begin(SCK_PIN, MISO_PIN, MOSI_PIN, SS_PIN);
   LoRa.setPins(SS_PIN, RST_PIN, -1); // -1 signifie qu'aucune broche DIO n'est utilisée
 
-  if (!LoRa.begin(848E6)) {
+  if (!LoRa.begin(866E6)) {
     Serial.println("Erreur lors de l'initialisation du module LoRa.");
   }
   LoRa.setSyncWord(0xAF);
